@@ -23,6 +23,7 @@ class _SendOrUpdateDataState extends State<SendOrUpdateData> {
   TextEditingController judulController = TextEditingController();
   TextEditingController isiController = TextEditingController();
   bool showProgressIndicator = false;
+  String successMessage = '';
 
   @override
   void initState() {
@@ -89,7 +90,7 @@ class _SendOrUpdateDataState extends State<SendOrUpdateData> {
                 if (judulController.text.isEmpty ||
                     isiController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Fill in all fields')),
+                    SnackBar(content: Text('Isi semua kolom')),
                   );
                 } else {
                   final dUser = FirebaseFirestore.instance
@@ -112,16 +113,26 @@ class _SendOrUpdateDataState extends State<SendOrUpdateData> {
                       judulController.text = '';
                       isiController.text = '';
                       showProgressIndicator = false;
-                      setState(() {});
-                      Navigator.pop(context);
+                      setState(() {
+                        successMessage = 'Catatan berhasil diupdate';
+                      });
+                      // Delay pesan sukses selama beberapa detik dan kembali ke halaman sebelumnya
+                      Future.delayed(Duration(seconds: 2), () {
+                        Navigator.pop(context);
+                      });
                     });
                   } else {
                     await dUser.set(jsonData).then((value) {
                       judulController.text = '';
                       isiController.text = '';
                       showProgressIndicator = false;
-                      setState(() {});
-                      Navigator.pop(context);
+                      setState(() {
+                        successMessage = 'Catatan berhasil ditambah';
+                      });
+                      // Delay pesan sukses selama beberapa detik dan kembali ke halaman sebelumnya
+                      Future.delayed(Duration(seconds: 2), () {
+                        Navigator.pop(context);
+                      });
                     });
                   }
                 }
@@ -141,7 +152,15 @@ class _SendOrUpdateDataState extends State<SendOrUpdateData> {
                         fontWeight: FontWeight.w300,
                       ),
                     ),
-            )
+            ),
+            SizedBox(height: 10),
+            Text(
+              successMessage,
+              style: TextStyle(
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
       ),
